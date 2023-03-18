@@ -1,0 +1,13 @@
+# dotfiles
+.*
+!.gitignore
+!.github
+# compiled python files
+*.py[co]
+__pycache__/
+# not tracked subdirectories
+.vscode
+/env/
+/src/
+/filestore/
+/logs/

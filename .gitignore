@@ -7,7 +7,7 @@
 __pycache__/
 # not tracked subdirectories
 .vscode
-/env/
+/venv/
 /src/
 /filestore/
 /logs/

@@ -32,3 +32,9 @@ Getting started with daibeisi-odoo
 -------------------------
 
 python ./src/odoo/odoo-bin --config=daibeisi-odoo.cfg
+
+安装、更新、测试
+-------------------------
+python ./src/odoo/odoo-bin --config=daibeisi-odoo.cfg -i addon1 --stop-after-init
+python ./src/odoo/odoo-bin --config=daibeisi-odoo.cfg -u addon1 --stop-after-init
+python ./src/odoo/odoo-bin --config=daibeisi-odoo.cfg --test-tags /addon1

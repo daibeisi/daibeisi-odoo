@@ -17,6 +17,8 @@
     'category': 'diy',
     'version': '0.1',
 
+    'external_dependencies': [],
+
     # any module necessary for this one to work correctly
     'depends': ['base'],
 
@@ -28,6 +30,16 @@
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        # 'demo/demo.xml',
     ],
+    'assets': {
+
+    },
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+    'pre_init_hook': '',
+    'post_init_hook': '',
+    'uninstall_hook': '',
+    'license': ''
 }

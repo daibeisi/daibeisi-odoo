@@ -44,14 +44,15 @@ class Example(models.Model):
     # 模型添加等级
     parent_id = fields.Many2one(comodel_name='diy.example', string="上级",
                                 ondelete='restrict', index=True)
-    parent_path = fields.Char(index=True)
     child_ids = fields.One2many(comodel_name='diy.example', inverse_name='parent_id',
                                 string="下级")
+    parent_path = fields.Char(index=True)
     _parent_store = True
     _parent_name = 'parent_id'
 
     @api.constrains('parent_id')
     def _check_parent_id(self):
+        """防止循环关系的检查"""
         if not self._check_recursion():
             raise models.ValidationError("错误！你不能创建递归记录。")
 

@@ -5,9 +5,8 @@ import threading
 import datetime
 from functools import wraps
 import logging
+
 _logger = logging.getLogger(__name__)
-
-
 
 
 class QYMP:
@@ -28,15 +27,6 @@ class QYMP:
                 cls._instance = super().__new__(cls)
             return cls._instance
 
-    @classmethod
-    def ensure_access_token_effective(cls, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-
-            return func(*args, **kwargs)
-
-        return wrapper
-
     def _get_access_token(self):
         """ 获取access_token及过期时间 """
         url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&" \
@@ -56,15 +46,20 @@ class QYMP:
                 errmsg = res_json.get("errmsg")
                 _logger.error(str(errcode) + "微信auth.getAccessToken接口获取access_token失败" + errmsg)
 
-    def ensure_access_token_effective(self):
-        """ 确保access_token有效 """
-        now_datetime = datetime.datetime.now()
-        if not self.access_token or now_datetime >= self.access_token_expires_time:
-            self._get_access_token()
+    def ensure_access_token_effective(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            """ 确保access_token有效 """
+            now_datetime = datetime.datetime.now()
+            if not self.access_token or now_datetime >= self.access_token_expires_time:
+                self._get_access_token()
+            return func(self, *args, **kwargs)
 
+        return wrapper
+
+    @ensure_access_token_effective
     def get_user_id(self, js_code):
         """ 获取用户 userid """
-        self.ensure_access_token_effective()
         url = 'https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?' \
               'access_token={access_token}&js_code={js_code}&' \
               'grant_type=authorization_code'.format(access_token=self.access_token, js_code=js_code)
@@ -82,10 +77,10 @@ class QYMP:
                 errmsg = res_json.get("errmsg")
                 _logger.error(str(errcode) + "微信auth.code2Session接口获取userid失败" + errmsg)
 
-    @QYMP.ensure_access_token_effective
+    @ensure_access_token_effective
     def get_department_list(self, dep_id=None):
         """ 获取部门列表 """
-        self.ensure_access_token_effective()
+        # self.ensure_access_token_effective()
         url = "https://qyapi.weixin.qq.com/cgi-bin/department/list?" \
               "access_token={access_token}".format(access_token=self.access_token)
         if dep_id is not None:
@@ -104,9 +99,9 @@ class QYMP:
                 errmsg = res_json.get("errmsg")
                 _logger.error(str(errcode) + "获取部门列表接口获取access_token失败" + errmsg)
 
+    @ensure_access_token_effective
     def get_department_user_info_list(self, dep_id):
         """ 获取成员ID列表 """
-        self.ensure_access_token_effective()
         url = "https://qyapi.weixin.qq.com/cgi-bin/user/list?" \
               "access_token={access_token}&department_id=" \
               "{dep_id}".format(access_token=self.access_token, dep_id=dep_id)
@@ -125,9 +120,10 @@ class QYMP:
                 errmsg = res_json.get("errmsg")
                 _logger.error(str(errcode) + "获取部门列表接口获取access_token失败" + errmsg)
 
+    @ensure_access_token_effective
     def send_text(self, content, touser=None, toparty=None):
         url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?" \
-                       "access_token=%s" % self.access_token
+              "access_token=%s" % self.access_token
         data = {
             "touser": touser,
             "toparty": toparty,
@@ -155,6 +151,6 @@ if __name__ == '__main__':
     qymp = QYMP(corpid="your_corpid", corpsecret="your_corpsecret")
     department_list = qymp.get_department_list()
     print(department_list)
-    for department in department_list:
-        department_user_info_list = qymp.get_department_user_info_list(department['id'])
-        print(department_user_info_list)
+    # for department in department_list:
+    #     department_user_info_list = qymp.get_department_user_info_list(department['id'])
+    #     print(department_user_info_list)

@@ -14,7 +14,7 @@ mini-program
 ├── src                   用于存储Odoo项目以及一些第三方插件项目
 ├── venv                  项目环境
 ├── .gitignore            Git忽略提交规则
-├── daibeisi-odoo.cfg              系统配置文件
+├── daibeisi-odoo.cfg     系统配置文件
 ├── README.md             项目手册
 └── requirement.txt       系统依赖包
 
